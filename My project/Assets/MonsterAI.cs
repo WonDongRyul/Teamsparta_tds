@@ -2,130 +2,88 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum MonsterState
-{
-    Walk,
-    Wait,
-    StackUp,
-    Cycle,
-    Attack,
-    Die
-}
+
 public class MonsterAI : MonoBehaviour
 {
-    public float movwSpeed = 1f;
-    public Transform targetTower;
-
+    public float moveSpeed = 1f;
     private Animator animator;
-    private MonsterState state = MonsterState.Walk;
-    private int stackIndex = -1;
-    private Transform center;
+    private Tower targetTower;
+    private bool isMove = false;
+    private bool stacked = false;
     // Start is called before the first frame update
     private void Start()
     {
         animator = this.GetComponent<Animator>();
-        SetState(MonsterState.Walk);
+        if (TowerManager.Instance != null)
+        {
+            targetTower = TowerManager.Instance.GetAvailableTower(this);
+            if (targetTower != null )
+            {
+                targetTower.AddMonster(this);
+                stacked = true;
+                CheckIfCanMove();
+            }
+        }
+        
     }
-
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        switch (state)
-        {
-            case MonsterState.Walk:
-                MoveToTower();
-                break;
-            case MonsterState.Wait:
-                break;
-            case MonsterState.StackUp:
-
-                break;
-            case MonsterState.Cycle:
-                if (center != null)
-                    transform.RotateAround(center.position, Vector3.forward, 30f * Time.deltaTime);
-                break;
-            case MonsterState.Attack:
-
-                break;
-            case MonsterState.Die:
-
-                break;
-        }
+        if (isMove && targetTower != null)
+            MoveToTarger();
     }
-    void MoveToTower()
+    private void TryMoveToFrontTower()
     {
-        Vector3 dir = (targetTower.position - transform.position).normalized;
-        transform.position += dir * movwSpeed * Time.deltaTime;
-
-        if(Vector3.Distance(transform.position, targetTower.position)< 0.1f)
+        Tower frontTower =TowerManager.Instance.GetBetterAvailableTower(targetTower);
+        if (frontTower != null && targetTower.CanMonsterMove(this))
         {
-            SetState(MonsterState.Wait);
-            Tower.Instance.RequestStack(this);
+            targetTower.RemoveMonster(this);
+            targetTower = frontTower;
+            targetTower.AddMonster(this);
+            stacked = true;
+            CheckIfCanMove();
+        }
+
+    }
+    private void MoveToTarger()
+    {
+        Vector3 direction = (targetTower.transform.position - transform.position).normalized;
+        transform.position += direction * moveSpeed * Time.deltaTime;
+
+        if (Vector2.Distance(transform.position, targetTower.transform.position) < 0.1f)
+        {
+            isMove = false;
+            ArriveAtTower();
         }
     }
 
-    public void StackTo(Vector3 position, int index)
+    private void ArriveAtTower()
     {
-        Debug.Log("aaaa");
-        stackIndex = index;
-        //center = rotationCenter;
-        SetState(MonsterState.StackUp);
-        StartCoroutine(MoveToPosition(position, () =>
-        {
-            SetState(MonsterState.Cycle);
-        }));
-
-    }
-    IEnumerator MoveToPosition(Vector3 target, System.Action onCompletr)
-    {
-        while (Vector3.Distance(transform.position,target) > 0.01f)
-        {
-            transform.position = Vector3.MoveTowards(transform.position, target, movwSpeed * Time.deltaTime);
-            yield return null;
-        }
-        onCompletr?.Invoke();
-    }
-    public void SetState(MonsterState newState)
-    {
-        state = newState;
-        UpdateAnimaator();
-
-    }
-
-    private void UpdateAnimaator()
-    {
-        if (animator == null) animator = GetComponent<Animator>();
+        
+        transform.position = targetTower.GetStackPostion(this);
+        animator.SetBool("IsIdle", true);
         animator.SetBool("IsAttacking", false);
         animator.SetBool("IsDead", false);
-        animator.SetBool("IsIdle", false);
-        switch (state)
+        TryMoveToFrontTower();
+    }
+    
+    public void RecheckTower()
+    {
+        if (!isMove && stacked && targetTower !=null)
         {
-            case MonsterState.Wait:
-                break;
-            case MonsterState.Cycle:
-                animator.SetBool("IsIdle", true);
-                break;
-            case MonsterState.Attack:
-                animator.SetBool("IsAttacking", true);
-                break;
-            case MonsterState.Die:
-                animator.SetBool("IsDead", true);
-                break;
-            case MonsterState.Walk:
-                break;
-            case MonsterState.StackUp:
-                break;
+            TryMoveToFrontTower();
+            CheckIfCanMove();
         }
     }
-     public void Die()
+    private void CheckIfCanMove()
     {
-        if (state == MonsterState.Die) return;
-        SetState(MonsterState.Die);
+        if (targetTower!= null && targetTower.CanMonsterMove(this))
+        {
+            isMove = true;
+            animator.SetBool("IsIdle", false);
+            animator.SetBool("IsAttacking", false);
+            animator.SetBool("IsDead", false);
+        }
     }
-
-    public void Awake()
-    {
-        if (state == MonsterState.Attack) return;
-        SetState(MonsterState.Attack);
-    }
+    
 }

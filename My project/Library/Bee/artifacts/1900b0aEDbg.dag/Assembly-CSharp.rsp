@@ -359,7 +359,9 @@
 -analyzer:"C:/Program Files/Unity/Hub/Editor/2022.3.42f1/Editor/Data/Tools/Unity.SourceGenerators/Unity.SourceGenerators.dll"
 "Assets/BackGroundScroll.cs"
 "Assets/MonsterAI.cs"
+"Assets/MonsterSpawner.cs"
 "Assets/Tower.cs"
+"Assets/TowerManager.cs"
 "Assets/WheelRotator.cs"
 -langversion:9.0
 /deterministic

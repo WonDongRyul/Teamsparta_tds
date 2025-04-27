@@ -5,35 +5,50 @@ using UnityEngine;
 public class Tower : MonoBehaviour
 {
     // Start is called before the first frame update
-    public static Tower Instance;
-
-    public Transform stacakBasePoint;
-    public float verticlaSpacing = 1f;
-    private List<MonsterAI> stackedMonsters = new List<MonsterAI>();
-
-    private void Awake()
+    public float stackoffsetY = 1f;
+    private List<MonsterAI> monstersOnTower = new List<MonsterAI>();
+    public Transform stackStartPoint;
+    
+    public void AddMonster(MonsterAI monster)
     {
-        Instance = this;
-    }
-    public void RequestStack(MonsterAI monster)
-    {
-        if (stackedMonsters.Count >= 8)
+        if (!monstersOnTower.Contains(monster))
         {
-            return;
+            monstersOnTower.Add(monster);
+            NotifyMonsters();
         }
-        int index = stackedMonsters.Count;
-        stackedMonsters.Add(monster);
-        Vector3 targetPos = stacakBasePoint.position + Vector3.up * verticlaSpacing * index;
-        monster.StackTo(targetPos, index);
-    }
-    void Start()
-    {
-        
     }
 
-    // Update is called once per frame
-    void Update()
+    public Vector3 GetStackPostion(MonsterAI monster)
     {
-        
+        Vector3 pos = stackStartPoint.position;
+        int index = monstersOnTower.IndexOf(monster);
+        if (index >= 0)
+        {
+            pos.y += index * stackoffsetY;
+        }
+        return pos;
     }
+
+    public int GetMonsterCount()
+    {
+        return monstersOnTower.Count;
+    }
+
+    public void RemoveMonster(MonsterAI monster)
+    {
+        monstersOnTower.Remove(monster);
+        NotifyMonsters();
+    }
+    private void NotifyMonsters()
+    {
+        if (monstersOnTower.Count > 0)
+        {
+            monstersOnTower[monstersOnTower.Count - 1].RecheckTower();
+        }
+    }
+    public bool CanMonsterMove(MonsterAI monster)
+    {
+        return monstersOnTower.Count > 0 && monstersOnTower[monstersOnTower.Count - 1] == monster;
+    }
+    
 }
