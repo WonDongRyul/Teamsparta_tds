@@ -40,5 +40,20 @@ public class TowerManager : MonoBehaviour
         }
         return null;
     }
+
+    public Tower GetFinalTargetTower(Tower starttower)
+    {
+        int startIndex = towers.IndexOf(starttower);
+
+        for (int i = startIndex -1; i >= 0; i--)
+        {
+            Tower front = towers[i];
+            if(front.GetMonsterCount() <= starttower.GetMonsterCount())
+            {
+                starttower = front;
+            }
+        }
+        return starttower;
+    }
     
 }

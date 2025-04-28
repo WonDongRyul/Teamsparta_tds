@@ -16,9 +16,10 @@ public class MonsterAI : MonoBehaviour
         animator = this.GetComponent<Animator>();
         if (TowerManager.Instance != null)
         {
-            targetTower = TowerManager.Instance.GetAvailableTower(this);
-            if (targetTower != null )
+            Tower initialTower = TowerManager.Instance.GetAvailableTower(this);
+            if (initialTower != null )
             {
+                targetTower = TowerManager.Instance.GetFinalTargetTower(initialTower);
                 targetTower.AddMonster(this);
                 stacked = true;
                 CheckIfCanMove();
@@ -47,10 +48,11 @@ public class MonsterAI : MonoBehaviour
     }
     private void MoveToTarger()
     {
-        Vector3 direction = (targetTower.transform.position - transform.position).normalized;
+        Vector3 targetPos = targetTower.GetStackPositionCollider(this);
+        Vector3 direction = (targetPos - transform.position).normalized;
         transform.position += direction * moveSpeed * Time.deltaTime;
 
-        if (Vector2.Distance(transform.position, targetTower.transform.position) < 0.1f)
+        if (Vector2.Distance(transform.position, targetPos) < 0.1f)
         {
             isMove = false;
             ArriveAtTower();
@@ -60,7 +62,7 @@ public class MonsterAI : MonoBehaviour
     private void ArriveAtTower()
     {
         
-        transform.position = targetTower.GetStackPostion(this);
+        transform.position = targetTower.GetStackPositionCollider(this);
         animator.SetBool("IsIdle", true);
         animator.SetBool("IsAttacking", false);
         animator.SetBool("IsDead", false);
@@ -85,5 +87,4 @@ public class MonsterAI : MonoBehaviour
             animator.SetBool("IsDead", false);
         }
     }
-    
 }
