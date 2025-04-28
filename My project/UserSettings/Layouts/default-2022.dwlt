@@ -19,7 +19,7 @@ MonoBehaviour:
     width: 1904
     height: 973
   m_ShowMode: 4
-  m_Title: Inspector
+  m_Title: Game
   m_RootView: {fileID: 2}
   m_MinSize: {x: 875, y: 300}
   m_MaxSize: {x: 10000, y: 10000}
@@ -121,7 +121,7 @@ MonoBehaviour:
   m_MinSize: {x: 400, y: 150}
   m_MaxSize: {x: 32384, y: 24288}
   vertical: 0
-  controlID: 161
+  controlID: 153
   draggingID: 0
 --- !u!114 &6
 MonoBehaviour:
@@ -148,7 +148,7 @@ MonoBehaviour:
   m_MinSize: {x: 100, y: 150}
   m_MaxSize: {x: 8096, y: 24288}
   vertical: 1
-  controlID: 18
+  controlID: 49
   draggingID: 0
 --- !u!114 &7
 MonoBehaviour:
@@ -376,7 +376,7 @@ MonoBehaviour:
     m_VAllowExceedBaseRangeMax: 1
     m_ScaleWithWindow: 0
     m_HSlider: 0
-    m_VSlider: 0
+    m_VSlider: 1
     m_IgnoreScrollWheelUntilClicked: 0
     m_EnableMouseInput: 1
     m_EnableSliderZoomHorizontal: 0
@@ -389,18 +389,18 @@ MonoBehaviour:
       y: 21
       width: 1039
       height: 243
-    m_Scale: {x: 0.07993421, y: 0.07993421}
-    m_Translation: {x: 519.5, y: 121.5}
+    m_Scale: {x: 0.18828271, y: 0.18828271}
+    m_Translation: {x: 519.5, y: 121.50001}
     m_MarginLeft: 0
     m_MarginRight: 0
     m_MarginTop: 0
     m_MarginBottom: 0
     m_LastShownAreaInsideMargins:
       serializedVersion: 2
-      x: -6499.0947
-      y: -1520
-      width: 12998.189
-      height: 3040
+      x: -2759.1487
+      y: -645.3062
+      width: 5518.2974
+      height: 1290.6124
     m_MinimalGUI: 1
   m_defaultScale: 0.07993421
   m_LastWindowPixelSize: {x: 1039, y: 264}
@@ -778,9 +778,9 @@ MonoBehaviour:
   m_PlayAudio: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: 12.6, y: -2.92, z: -0.21707875}
+    m_Target: {x: 6.2300415, y: 0.88567483, z: -0.18065627}
     speed: 2
-    m_Value: {x: 12.599999, y: -2.9199998, z: -0.21707873}
+    m_Value: {x: 6.2300415, y: 0.88567483, z: -0.18065627}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -830,9 +830,9 @@ MonoBehaviour:
     speed: 2
     m_Value: {x: 0, y: 0, z: 0, w: 1}
   m_Size:
-    m_Target: 10
+    m_Target: 6.3577557
     speed: 2
-    m_Value: 10
+    m_Value: 6.3577557
   m_Ortho:
     m_Target: 1
     speed: 2
@@ -895,14 +895,14 @@ MonoBehaviour:
     m_KeySerializationHelper:
     - {fileID: -3482323349148098339, guid: bbc88c8b4829f4f1bb9c48b661b17b01, type: 2}
     m_ValueSerializationHelper:
-    - e00: 0.8179554
+    - e00: 0.85604393
       e01: 0
       e02: 0
-      e03: -15.177795
+      e03: -27.802185
       e10: 0
-      e11: 0.8179554
+      e11: 0.85604393
       e12: 0
-      e13: 93.095856
+      e13: 58.461
       e20: 0
       e21: 0
       e22: 1
@@ -997,7 +997,7 @@ MonoBehaviour:
     m_OverlaysVisible: 1
   m_LockTracker:
     m_IsLocked: 0
-  m_LastSelectedObjectID: 23124
+  m_LastSelectedObjectID: 47714
 --- !u!114 &18
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -1069,9 +1069,9 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: 705a0000
-      m_LastClickedID: 23152
-      m_ExpandedIDs: 04d2ffff18d2ffff2cfbffff905a0000a05a0000
+      m_SelectedIDs: 
+      m_LastClickedID: 0
+      m_ExpandedIDs: 28faffff36faffff40faffff44faffff50faffff2afbffff2cfbffff365a0000525a0000665a0000
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -1140,7 +1140,7 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/6.Externals/Hero
+    - Assets
     m_Globs: []
     m_OriginalText: 
     m_ImportLogFlags: 0
@@ -1156,7 +1156,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 1e080000
     m_LastClickedID: 2078
-    m_ExpandedIDs: 00000000c45b00000c5c00000e5c0000105c0000125c0000145c0000165c0000185c00001a5c0000
+    m_ExpandedIDs: 00000000905b0000d85b0000da5b0000dc5b0000de5b0000e05b0000e25b0000e45b0000e65b0000e85b0000ea5b0000ec5b0000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1184,21 +1184,21 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: ffffffff00000000c45b00000c5c00000e5c0000105c0000125c0000145c0000165c0000185c00001a5c0000505c0000
+    m_ExpandedIDs: 2676ffffffffffff00000000905b0000d85b0000e05b0000e25b0000e45b0000e65b0000e85b0000ea5b0000ec5b0000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
-      m_Name: 
-      m_OriginalName: 
+      m_Name: ZombieMelee
+      m_OriginalName: ZombieMelee
       m_EditFieldRect:
         serializedVersion: 2
         x: 0
         y: 0
         width: 0
         height: 0
-      m_UserData: 0
+      m_UserData: 23224
       m_IsWaitingForDelay: 0
       m_IsRenaming: 0
-      m_OriginalEventType: 11
+      m_OriginalEventType: 0
       m_IsRenamingFilename: 1
       m_ClientGUIView: {fileID: 11}
     m_SearchString: 

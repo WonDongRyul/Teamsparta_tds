@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,12 +8,16 @@ public class MonsterAI : MonoBehaviour
 {
     public float moveSpeed = 1f;
     private Animator animator;
+    public Transform spawnPoint;
+    private MonsterHp monsterHp;
     private Tower targetTower;
     private bool isMove = false;
     private bool stacked = false;
     // Start is called before the first frame update
     private void Start()
     {
+        
+        monsterHp = GetComponent<MonsterHp>();
         animator = this.GetComponent<Animator>();
         if (TowerManager.Instance != null)
         {
@@ -86,5 +91,51 @@ public class MonsterAI : MonoBehaviour
             animator.SetBool("IsAttacking", false);
             animator.SetBool("IsDead", false);
         }
+    }
+    public void OnIdle()
+    {
+        animator.SetBool("IsIdle", true);
+        animator.SetBool("IsAttacking", false);
+        animator.SetBool("IsDead", false);
+    }
+    public void OnDeath()
+    {
+        moveSpeed = 0;
+        animator.SetBool("IsIdle", false);
+        animator.SetBool("IsAttacking", false);
+        animator.SetBool("IsDead", true);
+        if (targetTower != null)
+        {
+            targetTower.RemoveMonster(this);
+        }
+        Invoke(nameof(Respawn), 2f);
+    }
+
+    private void Respawn()
+    {
+        if(targetTower != null)
+        {
+            targetTower.RemoveMonster(this);
+        }
+
+        transform.position = spawnPoint.position;
+        moveSpeed = 1;
+        if (monsterHp != null)
+        {
+            monsterHp.ResetHP();
+        }
+        if (TowerManager.Instance != null)
+        {
+            targetTower = TowerManager.Instance.GetAvailableTower(this);
+
+            if (targetTower != null)
+            {
+                targetTower.AddMonster(this);
+                stacked = true;
+                CheckIfCanMove();
+            }
+        }
+        
+        OnIdle();
     }
 }

@@ -43,7 +43,7 @@ public class Tower : MonoBehaviour
     public Vector3 GetStackPositionCollider(MonsterAI monster)
     {
         int index = monstersOnTower.IndexOf(monster);
-        if (index == 0)
+        if (index <= 0)
         {
             return stackStartPoint.position;
         }
