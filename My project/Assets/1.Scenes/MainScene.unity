@@ -151,8 +151,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 18957bea9d129fb4da2bb959c73e269c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stackoffsetY: 0.15
-  stackStartPoint: {fileID: 29015769}
+  towerIndex: 0
 --- !u!4 &29015769
 Transform:
   m_ObjectHideFlags: 0
@@ -391,8 +390,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 18957bea9d129fb4da2bb959c73e269c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stackoffsetY: 0.15
-  stackStartPoint: {fileID: 151699110}
+  towerIndex: 0
 --- !u!4 &151699110
 Transform:
   m_ObjectHideFlags: 0
@@ -437,8 +435,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 18957bea9d129fb4da2bb959c73e269c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stackoffsetY: 0.15
-  stackStartPoint: {fileID: 176450018}
+  towerIndex: 0
 --- !u!4 &176450018
 Transform:
   m_ObjectHideFlags: 0
@@ -498,8 +495,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 18957bea9d129fb4da2bb959c73e269c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stackoffsetY: 0.15
-  stackStartPoint: {fileID: 290820724}
+  towerIndex: 0
 --- !u!1 &350327206
 GameObject:
   m_ObjectHideFlags: 0
@@ -1246,8 +1242,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 18957bea9d129fb4da2bb959c73e269c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stackoffsetY: 0.15
-  stackStartPoint: {fileID: 733138160}
+  towerIndex: 0
 --- !u!4 &733138160
 Transform:
   m_ObjectHideFlags: 0
@@ -1344,8 +1339,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 18957bea9d129fb4da2bb959c73e269c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stackoffsetY: 0.15
-  stackStartPoint: {fileID: 1161656557}
+  towerIndex: 0
 --- !u!1001 &1167745211
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1531,8 +1525,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 18957bea9d129fb4da2bb959c73e269c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stackoffsetY: 0.15
-  stackStartPoint: {fileID: 1298549390}
+  towerIndex: 0
 --- !u!1 &1362911150
 GameObject:
   m_ObjectHideFlags: 0
@@ -1676,6 +1669,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Hero
       objectReference: {fileID: 0}
+    - target: {fileID: 8958240697474582917, guid: 39e73014526a04149a4b4bff2302893b, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 9115941406881483208, guid: 39e73014526a04149a4b4bff2302893b, type: 3}
       propertyPath: m_LocalRotation.w
       value: 0.96126175
@@ -1753,8 +1750,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 18957bea9d129fb4da2bb959c73e269c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stackoffsetY: 0.15
-  stackStartPoint: {fileID: 1611607793}
+  towerIndex: 0
 --- !u!1 &1672110588
 GameObject:
   m_ObjectHideFlags: 0
@@ -1784,8 +1780,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 18957bea9d129fb4da2bb959c73e269c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stackoffsetY: 0.15
-  stackStartPoint: {fileID: 1672110590}
+  towerIndex: 0
 --- !u!4 &1672110590
 Transform:
   m_ObjectHideFlags: 0

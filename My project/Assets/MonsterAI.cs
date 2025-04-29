@@ -11,180 +11,157 @@ public class MonsterAI : MonoBehaviour
     private Animator animator;
     public Transform spawnPoint;
     private MonsterHp monsterHp;
-    private Tower targetTower;
+    public Tower currentTower;
+    private Tower nextTower;
+    private bool isDead = false;
     private bool isMove = false;
-    private bool stacked = false;
+    private Vector3 moveTarger;
+    private float arrivalTime;
+    private const float sefArrivalBuffer = 0.1f;
+    private Coroutine moveCoroutine;
+    public int stackIndex {  get; private set; }
     // Start is called before the first frame update
     private void Start()
     {
         
         monsterHp = GetComponent<MonsterHp>();
         animator = this.GetComponent<Animator>();
-        if (TowerManager.Instance != null)
-        {
-            Tower initialTower = TowerManager.Instance.GetAvailableTower(this);
-            if (initialTower != null )
-            {
-                targetTower = TowerManager.Instance.GetFinalTargetTower(initialTower);
-                targetTower.AddMonster(this);
-                stacked = true;
-                CheckIfCanMove();
-            }
-        }
-        
-    }
-    // Update is called once per frame
-    private void Update()
-    {
-        if (isMove && targetTower != null)
-            MoveToTarger();
-    }
-    private void TryMoveToFrontTower()
-    {
-        Tower frontTower =TowerManager.Instance.GetBetterAvailableTower(targetTower);
-        if (frontTower != null && targetTower.CanMonsterMove(this))
-        {
-            targetTower.RemoveMonster(this);
-            targetTower = frontTower;
-            targetTower.AddMonster(this);
-            stacked = true;
-            CheckIfCanMove();
-        }
-
-    }
-
-    private bool atBaseOfTower = false;
-    private void MoveToTarger()
-    {
-        Vector3 targetPos = targetTower.GetStackPositionCollider(this);
-        if (!atBaseOfTower)
-        {
-            Vector3 movePos = new Vector3(targetPos.x, transform.position.y, transform.position.z);
-            Vector3 direction = (movePos - transform.position).normalized;
-            transform.position += direction * moveSpeed * Time.deltaTime;
-
-            if(Mathf.Abs(transform.position.x - targetPos.x)< 1f)
-            {
-                atBaseOfTower=true;
-            }
-        }
-        else
-        {
-            Vector3 direction = (targetPos - transform.position).normalized;
-            transform.position += direction * moveSpeed * Time.deltaTime;
-            if (Vector2.Distance(transform.position, targetPos) < 0.1f)
-            {
-                atBaseOfTower = false;
-                isMove = false;
-                ArriveAtTower();
-            }
-        }
-        
-    }
-
-    private void ArriveAtTower()
-    {
-        
-        transform.position = targetTower.GetStackPositionCollider(this);
-        animator.SetBool("IsIdle", true);
-        animator.SetBool("IsAttacking", false);
-        animator.SetBool("IsDead", false);
-        TryMoveToFrontTower();
+        TryStartInitialMove();
     }
     
-    public void RecheckTower()
+    private void TryStartInitialMove()
     {
-        if (!isMove && stacked && targetTower !=null)
+        Tower startTower = TowerManager.Instance.GetHighestIndexTower();
+        if (startTower != null)
         {
-            TryMoveToFrontTower();
-            CheckIfCanMove();
+            Vector3 targetPos = startTower.GetStackPositionByIndex(startTower.GatAliveMonsterCount());
+            ReceiveMoveCommand(targetPos, startTower, startTower.GatAliveMonsterCount());
         }
-    }
-    private void CheckIfCanMove()
-    {
-        if (targetTower!= null && targetTower.CanMonsterMove(this))
-        {
-            isMove = true;
-            animator.SetBool("IsIdle", false);
-            animator.SetBool("IsAttacking", false);
-            animator.SetBool("IsDead", false);
-        }
-    }
-    public void OnIdle()
-    {
-        animator.SetBool("IsIdle", true);
-        animator.SetBool("IsAttacking", false);
-        animator.SetBool("IsDead", false);
     }
 
-    public bool isDead = false;
+    public void ReceiveMoveCommand(Vector3 targetPos, Tower targetTower, int index)
+    {
+        if (isMove)
+        {
+            return;
+        }
+        moveTarger = targetPos;
+        nextTower = targetTower;
+        stackIndex = index;
+        isMove = true;
+
+        if (moveCoroutine != null)
+        {
+            StopCoroutine(moveCoroutine);
+        }
+        moveCoroutine = StartCoroutine(MoveCoroutine());
+    }
+
+    private IEnumerator MoveCoroutine()
+    {
+        while(Vector3.Distance(transform.position, moveTarger) > 0.05f)
+        {
+            transform.position = Vector3.MoveTowards(transform.position, moveTarger, moveSpeed * Time.deltaTime);
+            yield return null;
+        }
+
+        transform.position = moveTarger;
+        isMove = false;
+        ReportArrival();
+    }
+
+    private void ReportArrival()
+    {
+        if (nextTower != null)
+        {
+            if (nextTower.CanAccpeptMoreMonsters())
+            {
+                currentTower = nextTower;
+                nextTower = null;
+                arrivalTime = Time.time;
+                currentTower.RegisterMonster(this);
+
+                Invoke(nameof(RequestRecheckMove), 0.2f);
+            }
+            else
+                nextTower = null;
+        }
+    }
+    private void RequestRecheckMove()
+    {
+        if (currentTower != null)
+        {
+            currentTower.ReceiveMonsterCountFromBehind(currentTower.GatAliveMonsterCount());
+        }
+    }
+    public void ReportDeath()
+    {
+        if (currentTower != null)
+        {
+            currentTower.RemoveMonster(this);
+            currentTower = null;
+        }
+    }
     public void OnDeath()
     {
-        moveSpeed = 0;
-        animator.SetBool("IsIdle", false);
-        animator.SetBool("IsAttacking", false);
-        animator.SetBool("IsDead", true);
-        if (targetTower != null)
+        if (isDead) return;
+        if (!IsJustArrived())
         {
-            targetTower.RemoveMonster(this);
+            moveSpeed = 0;
+            isDead = true;
+            animator.SetBool("IsIdle", false);
+            animator.SetBool("IsAttacking", false);
+            animator.SetBool("IsDead", true);
+            ReportDeath();
+            Invoke(nameof(Respawn), 2f);
         }
-        isDead = true;
-        Invoke(nameof(Respawn), 2f);
     }
 
     private void Respawn()
     {
         isDead = false;
-        if(targetTower != null)
-        {
-            targetTower.RemoveMonster(this);
-        }
-
-        transform.position = spawnPoint.position;
         moveSpeed = 1;
+        animator.SetBool("IsDead", false);
+        animator.SetBool("IsIdle", true);
         if (monsterHp != null)
         {
             monsterHp.ResetHP();
         }
-        if (TowerManager.Instance != null)
+        transform.position = spawnPoint.position;
+        Tower startTower = TowerManager.Instance.GetHighestIndexTower();
+        if (startTower != null)
         {
-            Tower initialTower = TowerManager.Instance.GetAvailableTower(this);
-
-            if (initialTower != null && !isDead)
-            {
-                targetTower = TowerManager.Instance.GetFinalTargetTower(initialTower);
-                targetTower.AddMonster(this);
-                stacked = true;
-                CheckIfCanMove();
-            }
+            Vector3 targetPos = startTower.GetStackPositionByIndex(startTower.GatAliveMonsterCount());
+            ReceiveMoveCommand(targetPos, startTower, startTower.GatAliveMonsterCount());
         }
-        
-        OnIdle();
-    }
-
-    public void UpdateStackPosition()
-    {
-        Vector3 targetPos = targetTower.GetStackPositionCollider(this);
-
-        Vector3 correctedTarget = new Vector3(transform.position.x, targetPos.y, transform.position.z);
-        StopAllCoroutines();
-        StartCoroutine(SmoothMoveTo(correctedTarget));
 
     }
 
-    private IEnumerator SmoothMoveTo(Vector3 target)
+    public void SetStackIndex(int index)
     {
-        float duration = 0.2f;
-        float time = 0;
+        stackIndex = index;
+    }
 
-        Vector3 start = transform.position;
-        while (time < duration)
+    public void UpdatePosition(Vector3 towerPosition)
+    {
+        /*if (TowerManager.Instance.towers.Count == nextTower.towerIndex)
         {
-            transform.position = Vector3.Lerp(start, target, time/duration);
-            time += Time.deltaTime;
-            yield return null;
-        }
+            stackIndex = 0;
+        }*/
+        float yOffset = stackIndex * 1f;
+        Vector3 targetPos = new Vector3(towerPosition.x, towerPosition.y + yOffset, towerPosition.z);
 
-        transform.position = target;
+        moveTarger = targetPos;
+        if (moveCoroutine != null)
+        {
+            StopCoroutine(moveCoroutine);
+        }
+        moveCoroutine = StartCoroutine(MoveCoroutine());
+    }
+
+    public bool IsDead { get { return isDead; } }
+    public bool IsJustArrived()
+    {
+        return Time.time - arrivalTime < sefArrivalBuffer;
     }
 }

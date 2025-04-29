@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class TowerManager : MonoBehaviour
@@ -10,50 +11,31 @@ public class TowerManager : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+        for (int i = 0; i < towers.Count; i++)
+        {
+            towers[i].towerIndex = i;
+        }
     }
 
-    
-    public Tower GetAvailableTower(MonsterAI monster)
+    public Tower GetHighestIndexTower()
     {
-       
-        for (int i = towers.Count - 1; i >= 0; i--)
+        if(towers.Count == 0)
         {
-            Tower curront = towers[i];
-            if (curront.GetMonsterCount()<8) 
-            { 
-                return curront; 
-            }  
+            return null;
         }
-        return null;
-    }
 
-    public Tower GetBetterAvailableTower(Tower currentTower)
-    {
-        int currentIndex = towers.IndexOf(currentTower);
-        for (int i = currentIndex-1; i >= 0; i--)
-        {
-            Tower front = towers[i];
-            if(front.GetMonsterCount() <= currentTower.GetMonsterCount())
-            {
-                return front;
-            }
-        }
-        return null;
-    }
-
-    public Tower GetFinalTargetTower(Tower starttower)
-    {
-        int startIndex = towers.IndexOf(starttower);
-
-        for (int i = startIndex -1; i >= 0; i--)
-        {
-            Tower front = towers[i];
-            if(front.GetMonsterCount() <= starttower.GetMonsterCount())
-            {
-                starttower = front;
-            }
-        }
-        return starttower;
+        return towers.OrderByDescending(x => x.towerIndex).First();
     }
     
+    public Tower GetTowerByIndex(int index)
+    {
+        if (index < 0 || index >= towers.Count)
+            return null;
+        return towers[index];
+    }
+    
+    public bool IsHisghestTower(Tower tower)
+    {
+        return tower.towerIndex == towers.Max(x => x.towerIndex);
+    }
 }
