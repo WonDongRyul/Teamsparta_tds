@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 
 public class MonsterAI : MonoBehaviour
@@ -51,17 +52,34 @@ public class MonsterAI : MonoBehaviour
         }
 
     }
+
+    private bool atBaseOfTower = false;
     private void MoveToTarger()
     {
         Vector3 targetPos = targetTower.GetStackPositionCollider(this);
-        Vector3 direction = (targetPos - transform.position).normalized;
-        transform.position += direction * moveSpeed * Time.deltaTime;
-
-        if (Vector2.Distance(transform.position, targetPos) < 0.1f)
+        if (!atBaseOfTower)
         {
-            isMove = false;
-            ArriveAtTower();
+            Vector3 movePos = new Vector3(targetPos.x, transform.position.y, transform.position.z);
+            Vector3 direction = (movePos - transform.position).normalized;
+            transform.position += direction * moveSpeed * Time.deltaTime;
+
+            if(Mathf.Abs(transform.position.x - targetPos.x)< 1f)
+            {
+                atBaseOfTower=true;
+            }
         }
+        else
+        {
+            Vector3 direction = (targetPos - transform.position).normalized;
+            transform.position += direction * moveSpeed * Time.deltaTime;
+            if (Vector2.Distance(transform.position, targetPos) < 0.1f)
+            {
+                atBaseOfTower = false;
+                isMove = false;
+                ArriveAtTower();
+            }
+        }
+        
     }
 
     private void ArriveAtTower()
@@ -98,6 +116,8 @@ public class MonsterAI : MonoBehaviour
         animator.SetBool("IsAttacking", false);
         animator.SetBool("IsDead", false);
     }
+
+    public bool isDead = false;
     public void OnDeath()
     {
         moveSpeed = 0;
@@ -108,11 +128,13 @@ public class MonsterAI : MonoBehaviour
         {
             targetTower.RemoveMonster(this);
         }
+        isDead = true;
         Invoke(nameof(Respawn), 2f);
     }
 
     private void Respawn()
     {
+        isDead = false;
         if(targetTower != null)
         {
             targetTower.RemoveMonster(this);
@@ -126,10 +148,11 @@ public class MonsterAI : MonoBehaviour
         }
         if (TowerManager.Instance != null)
         {
-            targetTower = TowerManager.Instance.GetAvailableTower(this);
+            Tower initialTower = TowerManager.Instance.GetAvailableTower(this);
 
-            if (targetTower != null)
+            if (initialTower != null && !isDead)
             {
+                targetTower = TowerManager.Instance.GetFinalTargetTower(initialTower);
                 targetTower.AddMonster(this);
                 stacked = true;
                 CheckIfCanMove();
@@ -137,5 +160,31 @@ public class MonsterAI : MonoBehaviour
         }
         
         OnIdle();
+    }
+
+    public void UpdateStackPosition()
+    {
+        Vector3 targetPos = targetTower.GetStackPositionCollider(this);
+
+        Vector3 correctedTarget = new Vector3(transform.position.x, targetPos.y, transform.position.z);
+        StopAllCoroutines();
+        StartCoroutine(SmoothMoveTo(correctedTarget));
+
+    }
+
+    private IEnumerator SmoothMoveTo(Vector3 target)
+    {
+        float duration = 0.2f;
+        float time = 0;
+
+        Vector3 start = transform.position;
+        while (time < duration)
+        {
+            transform.position = Vector3.Lerp(start, target, time/duration);
+            time += Time.deltaTime;
+            yield return null;
+        }
+
+        transform.position = target;
     }
 }

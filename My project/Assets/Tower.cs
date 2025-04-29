@@ -12,24 +12,16 @@ public class Tower : MonoBehaviour
     
     public void AddMonster(MonsterAI monster)
     {
-        if (!monstersOnTower.Contains(monster))
+        if (!monstersOnTower.Contains(monster) && !monster.isDead)
         {
             monstersOnTower.Add(monster);
             NotifyMonsters();
+            NotifyAllMonstersToUpdatePosition();
+            NotifyAllMonstersToRecheck();
         }
     }
 
-    public Vector3 GetStackPostion(MonsterAI monster)
-    {
-        Vector3 pos = stackStartPoint.position;
-        int index = monstersOnTower.IndexOf(monster);
-        if (index >= 0)
-        {
-            pos.y += index * stackoffsetY;
-        }
-        return pos;
-    }
-
+    
     public int GetMonsterCount()
     {
         return monstersOnTower.Count;
@@ -37,8 +29,13 @@ public class Tower : MonoBehaviour
 
     public void RemoveMonster(MonsterAI monster)
     {
-        monstersOnTower.Remove(monster);
-        NotifyMonsters();
+        if (monstersOnTower.Contains(monster))
+        {
+            NotifyMonsters();
+            NotifyAllMonstersToUpdatePosition();
+            NotifyAllMonstersToRecheck();
+        }
+
     }
     public Vector3 GetStackPositionCollider(MonsterAI monster)
     {
@@ -55,7 +52,7 @@ public class Tower : MonoBehaviour
             if (topCollider != null)
             {
                 Vector3 topPosition = topCollider.bounds.max;
-                return new Vector3(topPosition.x, topPosition.y + stackoffsetY, topMonster.transform.position.z);
+                return new Vector3(stackStartPoint.position.x, topPosition.y + stackoffsetY, stackStartPoint.position.z);
             }
             else
             {
@@ -75,4 +72,19 @@ public class Tower : MonoBehaviour
         return monstersOnTower.Count > 0 && monstersOnTower[monstersOnTower.Count - 1] == monster;
     }
     
+    private void NotifyAllMonstersToUpdatePosition()
+    {
+        foreach (var monster in monstersOnTower)
+        {
+            monster.UpdateStackPosition();
+        }
+    }
+
+    private void NotifyAllMonstersToRecheck()
+    {
+        foreach (var monster in monstersOnTower)
+        {
+            monster.RecheckTower();
+        }
+    }
 }
